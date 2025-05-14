@@ -1,7 +1,7 @@
 **Universidad Privada de Tacna**  
 **Facultad de Ingeniería**  
 **Escuela Profesional de Ingeniería de Sistemas**  
-
+  
 ---
 
 ## Curso: Planeamiento Estrategico de PETI
