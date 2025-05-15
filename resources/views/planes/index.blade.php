@@ -11,9 +11,10 @@
             <p><strong>Misión:</strong> {{ $plan->mision }}</p>
             <p><strong>Visión:</strong> {{ $plan->vision }}</p>
             <a href="{{ route('planes.edit', $plan) }}" class="text-blue-600">Editar</a>
-            <form action="{{ route('planes.destroy', $plan) }}" method="POST" class="inline-block ml-2">
-                @csrf @method('DELETE')
-                <button class="text-red-600">Eliminar</button>
+            <form action="{{ route('planes.destroy', $plan->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro?')">
+                @csrf
+                @method('DELETE')
+                <button class="text-red-600">Desactivar</button>
             </form>
         </div>
     @endforeach

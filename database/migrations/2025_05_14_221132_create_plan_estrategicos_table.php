@@ -13,9 +13,15 @@ return new class extends Migration
     {
         Schema::create('plan_estrategicos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Relación con usuarios
+            $table->string('nombre_plan');
+            $table->text('mision')->nullable();
+            $table->text('vision')->nullable();
+            $table->text('valores')->nullable();
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
