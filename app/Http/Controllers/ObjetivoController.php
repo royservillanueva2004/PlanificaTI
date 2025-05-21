@@ -13,7 +13,9 @@ class ObjetivoController extends Controller
         $generales = Objetivo::where('tipo', 'general')
             ->whereHas('plan', function ($q) {
                 $q->where('user_id', auth()->id());
-            })->with('especificos')->get();
+            })
+            ->with('especificos')
+            ->get();
 
         return view('objetivos.index', compact('generales'));
     }
@@ -39,10 +41,10 @@ class ObjetivoController extends Controller
             'descripcion' => $request->descripcion_general,
         ]);
 
-        // Crear objetivos específicos si hay
+        // Crear objetivos específicos si existen
         if ($request->has('especificos')) {
             foreach ($request->especificos as $desc) {
-                if ($desc) {
+                if (!empty($desc)) {
                     Objetivo::create([
                         'plan_id' => $request->plan_id,
                         'tipo' => 'especifico',
@@ -58,7 +60,7 @@ class ObjetivoController extends Controller
 
     public function edit($id)
     {
-        $objetivo = Objetivo::findOrFail($id);
+        $objetivo = Objetivo::with('especificos')->findOrFail($id);
         $planes = PlanEstrategico::where('user_id', auth()->id())->get();
         $generales = Objetivo::where('tipo', 'general')->where('id', '!=', $id)->get();
 
@@ -71,19 +73,35 @@ class ObjetivoController extends Controller
 
         $request->validate([
             'plan_id' => 'required|exists:plan_estrategicos,id',
-            'tipo' => 'required|in:general,especifico',
             'descripcion' => 'required|string',
-            'parent_id' => 'nullable|exists:objetivos,id',
+            'especificos' => 'nullable|array',
+            'especificos.*' => 'nullable|string'
         ]);
 
+        // Actualizar objetivo general
         $objetivo->update([
             'plan_id' => $request->plan_id,
-            'tipo' => $request->tipo,
-            'descripcion' => $request->descripcion,
-            'parent_id' => $request->parent_id,
+            'descripcion' => $request->descripcion
         ]);
 
-        return redirect()->route('objetivos.index')->with('success', 'Objetivo actualizado.');
+        // Eliminar específicos antiguos
+        Objetivo::where('parent_id', $objetivo->id)->delete();
+
+        // Crear nuevos específicos
+        if ($request->has('especificos')) {
+            foreach ($request->especificos as $desc) {
+                if (!empty($desc)) {
+                    Objetivo::create([
+                        'plan_id' => $request->plan_id,
+                        'tipo' => 'especifico',
+                        'descripcion' => $desc,
+                        'parent_id' => $objetivo->id,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('objetivos.index')->with('success', 'Objetivo actualizado correctamente.');
     }
 
     public function destroy($id)

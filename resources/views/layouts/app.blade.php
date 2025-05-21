@@ -28,28 +28,43 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="flex min-h-screen bg-gray-100 text-gray-800">
+            <main x-data="{ openFoda: false, openInterno: false, openExterno: false }" class="flex min-h-screen bg-gray-100 text-gray-800">
 
                 {{-- Sidebar --}}
                 <aside class="w-64 bg-white shadow-md">
-                    <nav class="p-4 space-y-2">
-                        <a href="/dashboard" class="block px-4 py-2 hover:bg-blue-100">🏠 Dashboard</a>
+                    <nav class="p-4 space-y-2 text-sm">
 
-                        {{-- Información de la Empresa --}}
-                        <a href="/planes" class="block px-4 py-2 hover:bg-blue-100">📄 Plan Estratégico</a> {{-- contiene misión, visión, valores --}}
+                        <a href="/planes" class="block px-4 py-2 hover:bg-blue-100">📄 Plan Estratégico</a>
                         <a href="/objetivos" class="block px-4 py-2 hover:bg-blue-100">🎯 Objetivos</a>
 
-                        {{-- Análisis estratégico --}}
-                        <a href="/foda" class="block px-4 py-2 hover:bg-blue-100">📊 FODA</a>
-                        <a href="/cadena-valor" class="block px-4 py-2 hover:bg-blue-100">🔗 Cadena de Valor</a>
-                        <a href="/matriz-participacion" class="block px-4 py-2 hover:bg-blue-100">📈 Matriz de Participación</a>
-                        <a href="/porter" class="block px-4 py-2 hover:bg-blue-100">🧠 5 Fuerzas de Porter</a>
-                        <a href="/pest" class="block px-4 py-2 hover:bg-blue-100">🌐 Análisis PEST</a>
-                        <a href="/estrategia" class="block px-4 py-2 hover:bg-blue-100">🎯 Identificación de Estrategia</a>
-                        <a href="/came" class="block px-4 py-2 hover:bg-blue-100">🧩 Matriz CAME</a>
+                        {{-- FODA --}}
+                        <button @click="openFoda = !openFoda" class="w-full text-left px-4 py-2 hover:bg-blue-100 font-semibold">
+                            📊 FODA
+                        </button>
 
-                        {{-- Resumen final --}}
-                        <a href="/resumen-ejecutivo" class="block px-4 py-2 hover:bg-blue-100">📋 Resumen Ejecutivo</a>
+                        <div x-show="openFoda" class="pl-4 space-y-1">
+                            {{-- Análisis Interno --}}
+                            <button @click="openInterno = !openInterno" class="w-full text-left px-4 py-1 hover:bg-blue-100">
+                                🔍 Análisis Interno
+                            </button>
+                            <div x-show="openInterno" class="pl-4">
+                                <a href="/cadena-valor" class="block px-4 py-1 hover:bg-blue-100">🔗 Cadena de Valor</a>
+                                <a href="/matriz-participacion" class="block px-4 py-1 hover:bg-blue-100">📈 Matriz Participación</a>
+                            </div>
+
+                            {{-- Análisis Externo --}}
+                            <button @click="openExterno = !openExterno" class="w-full text-left px-4 py-1 hover:bg-blue-100">
+                                🌐 Análisis Externo
+                            </button>
+                            <div x-show="openExterno" class="pl-4">
+                                <a href="/porter" class="block px-4 py-1 hover:bg-blue-100">🧠 5 Fuerzas de Porter</a>
+                                <a href="/pest" class="block px-4 py-1 hover:bg-blue-100">🌍 PEST</a>
+                            </div>
+                        </div>
+
+                        <a href="/estrategia" class="block px-4 py-2 hover:bg-blue-100">🎯 Identificación Estratégica</a>
+                        <a href="/matrizcame" class="block px-4 py-2 hover:bg-blue-100">🧩 Matriz CAME</a>
+                        <a href="/resumen-ejecutivo" class="block px-4 py-2 hover:bg-blue-100">📋 Resumen del Plan Ejecutivo</a>
                     </nav>
                 </aside>
 
