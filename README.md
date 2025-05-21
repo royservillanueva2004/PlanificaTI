@@ -3,7 +3,7 @@
 **Escuela Profesional de Ingeniería de Sistemas**  
      
 ---
-
+    
 ## Curso: Planeamiento Estrategico de PETI
 **Docente: Dr. Oscar J. Jimenez Flores**
 
