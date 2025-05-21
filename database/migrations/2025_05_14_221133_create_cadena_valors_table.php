@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('cadena_valors', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('plan_id')->constrained('plan_estrategicos')->onDelete('cascade');
+            $table->json('respuestas'); // para almacenar las 25 respuestas
+            $table->text('reflexion')->nullable();
             $table->timestamps();
         });
     }

@@ -93,7 +93,7 @@
                                 </svg>
                             </span>
                             <span>
-                                <strong class="font-medium">Soluciones personalizadas</strong> - Desarrollamos software a medida para tus necesidades específicas.
+                               <strong class="font-medium">Planes Estratégicos Personalizados</strong> - Diseñamos soluciones estratégicas adaptadas a los objetivos y necesidades específicas de tu organización.
                             </span>
                         </li>
                         <li class="flex items-start gap-4 py-2">
