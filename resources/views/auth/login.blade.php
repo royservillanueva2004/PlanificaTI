@@ -42,7 +42,7 @@
             </div>
 
             <!-- Formulario -->
-            <form class="mt-8 space-y-6" method="POST" action="{{ route('login') }}">
+            <form class="mt-8 space-y-6" method="POST" action="{{ route('login') }}" autocomplete="off">
                 @csrf
                 
                 <!-- Campo Email -->

@@ -10,10 +10,14 @@ class ObjetivoController extends Controller
 {
     public function index()
     {
+        $planId = session('plan_id');
+
+        if (!$planId) {
+            return redirect()->route('planes.index')->with('error', 'Seleccione un plan estratégico primero.');
+        }
+
         $generales = Objetivo::where('tipo', 'general')
-            ->whereHas('plan', function ($q) {
-                $q->where('user_id', auth()->id());
-            })
+            ->where('plan_id', $planId) // ✅ Solo objetivos del plan seleccionado
             ->with('especificos')
             ->get();
 
