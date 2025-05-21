@@ -27,7 +27,8 @@ class PlanEstrategicoController extends Controller
             'nombre_plan' => 'required|string|max:255',
             'mision' => 'nullable|string',
             'vision' => 'nullable|string',
-            'valores' => 'nullable|string',
+            'valores' => 'nullable|array', // Cambiado: ahora se espera un array
+            'valores.*' => 'nullable|string' // Cada valor debe ser texto
         ]);
 
         PlanEstrategico::create([
@@ -35,7 +36,7 @@ class PlanEstrategicoController extends Controller
             'nombre_plan' => $request->nombre_plan,
             'mision' => $request->mision,
             'vision' => $request->vision,
-            'valores' => $request->valores,
+            'valores' => implode(',', array_filter($request->valores)), // Convertimos el array a string
         ]);
 
         return redirect()->route('planes.index')->with('success', 'Plan creado correctamente.');
@@ -53,11 +54,18 @@ class PlanEstrategicoController extends Controller
             'nombre_plan' => 'required|string|max:255',
             'mision' => 'nullable|string',
             'vision' => 'nullable|string',
-            'valores' => 'nullable|string',
+            'valores' => 'nullable|array',
+            'valores.*' => 'nullable|string'
         ]);
 
-        $plane = \App\Models\PlanEstrategico::findOrFail($id);
-        $plane->update($request->all());
+        $plane = PlanEstrategico::findOrFail($id);
+
+        $plane->update([
+            'nombre_plan' => $request->nombre_plan,
+            'mision' => $request->mision,
+            'vision' => $request->vision,
+            'valores' => implode(',', array_filter($request->valores)),
+        ]);
 
         return redirect()->route('planes.index')->with('success', 'Plan actualizado.');
     }
@@ -75,5 +83,16 @@ class PlanEstrategicoController extends Controller
         $plan->save();
 
         return redirect()->route('planes.index')->with('success', 'Plan desactivado correctamente.');
+    }
+    public function seleccionar(Request $request)
+
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plan_estrategicos,id'
+        ]);
+
+        session(['plan_id' => $request->plan_id]);
+
+        return redirect()->route('objetivos.index')->with('success', 'Plan seleccionado correctamente.');
     }
 }

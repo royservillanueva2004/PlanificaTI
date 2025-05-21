@@ -4,31 +4,31 @@
 <div class="max-w-2xl mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">🎯 Nuevo Objetivo Estratégico</h1>
 
-    <form action="{{ route('objetivos.store') }}" method="POST">
+    <form action="{{ route('objetivos.store') }}" method="POST" x-data="{ count: 1 }">
         @csrf
 
-        {{-- Plan estratégico --}}
-        <div class="mb-4">
-            <label class="block font-medium">Plan Estratégico</label>
-            <select name="plan_id" class="w-full border rounded px-3 py-2">
-                @foreach($planes as $plan)
-                    <option value="{{ $plan->id }}">{{ $plan->nombre_plan }}</option>
-                @endforeach
-            </select>
-        </div>
+        {{-- Plan estratégico oculto --}}
+        <input type="hidden" name="plan_id" value="{{ session('plan_id') }}">
 
         {{-- Objetivo General --}}
         <div class="mb-4">
             <label class="block font-medium">Objetivo General</label>
-            <textarea name="descripcion_general" class="w-full border rounded px-3 py-2" rows="3" required></textarea>
+            <textarea name="descripcion_general"
+                      class="w-full border rounded px-3 py-2"
+                      rows="3"
+                      required
+                      placeholder="Describe el objetivo general..."></textarea>
         </div>
 
         {{-- Objetivos Específicos dinámicos --}}
-        <div x-data="{ count: 1 }" class="mb-4">
+        <div class="mb-4">
             <label class="block font-medium mb-2">Objetivos Específicos</label>
 
             <template x-for="i in count" :key="i">
-                <textarea name="especificos[]" class="..." :placeholder="'Objetivo específico #' + (count)"></textarea>
+                <textarea :name="'especificos[]'"
+                          class="w-full border rounded px-3 py-2 mb-2"
+                          :placeholder="'Objetivo específico #' + i"
+                          required></textarea>
             </template>
 
             <button type="button"
@@ -38,6 +38,7 @@
             </button>
         </div>
 
+        {{-- Botón de guardar --}}
         <button type="submit"
                 class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             Guardar Objetivos
