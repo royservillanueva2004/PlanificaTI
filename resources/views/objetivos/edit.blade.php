@@ -1,10 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2 class="text-2xl font-bold mb-4">Editar Objetivo Estratégico</h2>
+<div class="max-w-xl mx-auto mt-8 bg-white p-6 rounded-xl shadow-md border border-gray-200">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+        ✏️ Editar Objetivo Estratégico
+    </h2>
 
     @if (session('success'))
-        <div class="bg-green-100 text-green-700 p-2 rounded mb-4">
+        <div class="bg-green-100 text-green-700 p-3 rounded mb-4 border border-green-300">
             {{ session('success') }}
         </div>
     @endif
@@ -13,102 +16,97 @@
         @csrf
         @method('PUT')
 
+        {{-- Campo oculto de plan_id --}}
+        <input type="hidden" name="plan_id" value="{{ $objetivo->plan_id }}">
+
+        {{-- Objetivo general --}}
         <div class="mb-4">
-            <label class="block font-medium mb-1">Plan Estratégico</label>
-            <select name="plan_id" class="w-full border rounded px-3 py-2">
-                @foreach ($planes as $plan)
-                    <option value="{{ $plan->id }}" {{ $plan->id == $objetivo->plan_id ? 'selected' : '' }}>
-                        {{ $plan->nombre_plan }}
-                    </option>
-                @endforeach
-            </select>
+            <label class="block font-medium text-gray-600 mb-1">Objetivo General</label>
+            <textarea name="descripcion" rows="3" required
+                class="w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+                placeholder="Descripción general">{{ old('descripcion', $objetivo->descripcion) }}</textarea>
         </div>
 
-        <div class="mb-4">
-            <label class="block font-medium mb-1">Objetivo General</label>
-            <textarea name="descripcion" class="w-full border rounded px-3 py-2" rows="3">{{ old('descripcion', $objetivo->descripcion) }}</textarea>
-        </div>
-
+        {{-- Objetivos específicos --}}
         <div>
-    <label class="block font-medium mb-2">Objetivos Específicos</label>
+            <label class="block font-medium text-gray-600 mb-2">Objetivos Específicos</label>
 
-        <div id="contenedorEspecificos">
-            @foreach ($objetivo->especificos as $index => $especifico)
-                <div class="mb-2" style="display: flex; align-items: center;">
-                    <textarea
-                        name="especificos[{{ $index }}]"
-                        class="w-full border rounded px-3 py-2"
-                        rows="2"
-                    >{{ old('especificos.' . $index, $especifico->descripcion) }}</textarea>
-                    <button type="button" class="btnEliminar bg-red-600 text-white px-2 py-1 rounded ml-2">Eliminar</button>
-                </div>
-            @endforeach
-        </div>
-            
-            <button type="button" id="btnAgregarEspecifico" class="bg-green-600 text-white px-3 py-1 rounded">
+            <div id="contenedorEspecificos">
+                @foreach ($objetivo->especificos as $index => $especifico)
+                    <div class="mb-2 flex items-start gap-2">
+                        <textarea name="especificos[{{ $index }}]" rows="2"
+                            class="w-full border rounded px-3 py-2"
+                            placeholder="Objetivo específico #{{ $loop->iteration }}">{{ old("especificos.$index", $especifico->descripcion) }}</textarea>
+
+                        <button type="button" class="btnEliminar p-2 bg-red-500 hover:bg-red-600 rounded-full text-white transition" title="Eliminar">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 8a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                @endforeach
+            </div>
+
+            <button type="button" id="btnAgregarEspecifico"
+                class="mt-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded shadow">
                 + Agregar Específico
             </button>
         </div>
 
-        <div class="mt-6">
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Actualizar Objetivo</button>
-            <a href="{{ route('objetivos.index') }}" class="ml-3 text-gray-600 hover:underline">Cancelar</a>
+        <div class="mt-6 flex gap-3">
+            <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow">
+                💾 Actualizar Objetivo
+            </button>
+            <a href="{{ route('objetivos.index') }}"
+                class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 text-gray-700 transition">
+                Cancelar
+            </a>
         </div>
     </form>
+</div>
 @endsection
 
+@section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const btnAgregar = document.getElementById('btnAgregarEspecifico');
     const contenedor = document.getElementById('contenedorEspecificos');
+    const btnAgregar = document.getElementById('btnAgregarEspecifico');
 
-    // Función para actualizar los nombres de los textareas al eliminar o agregar
-    function actualizarNombres() {
-        const divs = contenedor.querySelectorAll('div.mb-2');
-        divs.forEach((div, index) => {
-            const textarea = div.querySelector('textarea');
-            textarea.name = `especificos[${index}]`;
-        });
-    }
-
-    // Agregar nuevo textarea con botón eliminar
+    // Agregar
     btnAgregar.addEventListener('click', function () {
-        const nuevoIndex = contenedor.querySelectorAll('textarea').length;
-
         const div = document.createElement('div');
-        div.classList.add('mb-2');
-        div.style.display = 'flex';
-        div.style.alignItems = 'center';
+        div.className = 'mb-2 flex items-start gap-2';
 
         const textarea = document.createElement('textarea');
-        textarea.name = `especificos[${nuevoIndex}]`;
+        textarea.name = `especificos[]`;
         textarea.className = 'w-full border rounded px-3 py-2';
         textarea.rows = 2;
-        textarea.placeholder = `Objetivo específico #${nuevoIndex + 1}`;
 
         const btnEliminar = document.createElement('button');
         btnEliminar.type = 'button';
-        btnEliminar.textContent = 'Eliminar';
-        btnEliminar.className = 'bg-red-600 text-white px-2 py-1 rounded ml-2';
+        btnEliminar.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M6 8a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1z" clip-rule="evenodd" />
+            </svg>`;
+        btnEliminar.className = 'p-2 bg-red-500 hover:bg-red-600 rounded-full';
 
         btnEliminar.addEventListener('click', () => {
             contenedor.removeChild(div);
-            actualizarNombres();
         });
 
         div.appendChild(textarea);
         div.appendChild(btnEliminar);
-
         contenedor.appendChild(div);
     });
 
-    // Delegación para eliminar objetivos específicos existentes
-    contenedor.addEventListener('click', function (e) {
-        if (e.target.classList.contains('btnEliminar')) {
-            const div = e.target.parentElement;
+    // Delegar eventos de eliminación en elementos ya existentes
+    contenedor.querySelectorAll('.btnEliminar').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const div = this.closest('div');
             contenedor.removeChild(div);
-            actualizarNombres();
-        }
+        });
     });
 });
 </script>
+@endsection

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlanEstrategicoController;
 use App\Http\Controllers\ObjetivoController;
 use App\Http\Controllers\MatrizCAMEController;
+use App\Http\Controllers\CadenaValorController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +29,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'plan.selected'])->group(function () {
     Route::resource('objetivos', ObjetivoController::class);
     Route::resource('matrizcame', MatrizCAMEController::class);
+    Route::resource('cadena-valor', CadenaValorController::class);
+    Route::post('/generar-reflexion', [CadenaValorController::class, 'generarReflexion'])->name('generar.reflexion');
     // Aquí puedes agregar también FODA, PEST, etc.
 });
 
