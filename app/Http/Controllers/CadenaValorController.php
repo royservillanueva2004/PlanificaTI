@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PlanEstrategico;
 use App\Models\CadenaValor;
 use OpenAI\Laravel\Facades\OpenAI;
+use App\Models\AnalisisFoda;
 
 class CadenaValorController extends Controller
 {
@@ -83,22 +84,67 @@ class CadenaValorController extends Controller
 
     public function generarReflexion(Request $request)
     {
-        $resultado = $request->input('resultado'); // Este es el total de puntos sobre 100
+        $resultado = $request->input('resultado');
 
-        $prompt = "Genera una reflexión estratégica sobre una autoevaluación de cadena de valor que obtuvo un POTENCIAL DE MEJORA de " . (100 - $resultado) . "%." .
-                " El análisis debe resaltar áreas de mejora, oportunidades estratégicas y una visión hacia la excelencia operativa, sin decir que se obtuvo X puntos sobre 100.";
+        $prompt = "Genera una reflexión estratégica basada en un POTENCIAL DE MEJORA del " . (100 - $resultado) . "% en una autoevaluación de la cadena de valor. " .
+                "La reflexión debe enfocarse en identificar áreas clave de mejora, visión estratégica y oportunidades sin mencionar puntuaciones explícitas. " .
+                "No excedas 15 líneas en el texto.";
 
         $response = OpenAI::chat()->create([
-            'model' => 'gpt-4',
+            'model' => 'gpt-3.5-turbo', // opcionalmente más rápido que gpt-4
             'messages' => [
                 ['role' => 'system', 'content' => 'Eres un asesor experto en planeamiento estratégico.'],
                 ['role' => 'user', 'content' => $prompt],
             ],
+            'max_tokens' => 600, // Aproximadamente 15 líneas
         ]);
 
         return response()->json([
             'reflexion' => $response['choices'][0]['message']['content'] ?? 'No se pudo generar la reflexión.'
         ]);
     }
+
+    public function mostrarAnalisis(Request $request)
+    {
+        $planId = session('plan_id');
+
+        // Guardar la evaluación
+        CadenaValor::updateOrCreate(
+            ['plan_id' => $planId],
+            [
+                'respuestas' => $request->respuestas,
+                'reflexion' => $request->reflexion
+            ]
+        );
+
+        // Recuperar fortalezas y debilidades guardadas (si existen)
+        $foda = AnalisisFoda::where('plan_id', $planId)->first();
+
+        $total = array_sum($request->respuestas ?? []);
+        $porcentajeMejora = round((1 - ($total / 100)) * 100);
+
+        return view('cadena-valor.analisis', [
+            'resultado' => 100 - $porcentajeMejora,
+            'reflexion' => $request->reflexion,
+            'foda' => $foda
+        ]);
+    }
     
+    public function verAnalisis()
+    {
+        $planId = session('plan_id');
+        $registro = CadenaValor::where('plan_id', $planId)->first();
+        $foda = AnalisisFoda::where('plan_id', $planId)->first();
+
+        if (!$registro) return redirect()->route('cadena-valor.index');
+
+        $total = array_sum($registro->respuestas ?? []);
+        $porcentajeMejora = round((1 - ($total / 100)) * 100);
+
+        return view('cadena-valor.analisis', [
+            'resultado' => 100 - $porcentajeMejora,
+            'reflexion' => $registro->reflexion,
+            'foda' => $foda
+        ]);
+    }
 }

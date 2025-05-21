@@ -6,6 +6,7 @@ use App\Http\Controllers\PlanEstrategicoController;
 use App\Http\Controllers\ObjetivoController;
 use App\Http\Controllers\MatrizCAMEController;
 use App\Http\Controllers\CadenaValorController;
+use App\Http\Controllers\AnalisisFodaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,9 +30,18 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'plan.selected'])->group(function () {
     Route::resource('objetivos', ObjetivoController::class);
     Route::resource('matrizcame', MatrizCAMEController::class);
-    Route::resource('cadena-valor', CadenaValorController::class);
+
+    // Rutas específicas para Cadena de Valor
+    Route::get('/cadena-valor/analisis', [CadenaValorController::class, 'verAnalisis'])->name('cadena-valor.ver');
+    Route::post('/cadena-valor/analisis', [CadenaValorController::class, 'mostrarAnalisis'])->name('cadena-valor.analisis');
     Route::post('/generar-reflexion', [CadenaValorController::class, 'generarReflexion'])->name('generar.reflexion');
-    // Aquí puedes agregar también FODA, PEST, etc.
+
+    // Guardar FODA
+    Route::post('/foda/guardar', [AnalisisFodaController::class, 'guardar'])->name('foda.guardar');
+    Route::get('/matriz-participacion', [App\Http\Controllers\MatrizParticipacionController::class, 'index'])->name('matriz.participacion');
+
+    // Registrar todo menos `show`
+    Route::resource('cadena-valor', CadenaValorController::class)->except(['show']);
 });
 
 require __DIR__.'/auth.php';
