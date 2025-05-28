@@ -52,7 +52,7 @@
                                 </button>
                                 <div x-show="openInterno" class="pl-4">
                                     <a href="/cadena-valor" class="block px-4 py-1 hover:bg-blue-100">🔗 Cadena de Valor</a>
-                                    <a href="/matriz-participacion" class="block px-4 py-1 hover:bg-blue-100">📈 Matriz Participación</a>
+                                    <a href="/matriz-bcg" class="block px-4 py-1 hover:bg-blue-100">📈 Matriz Participación</a>
                                 </div>
 
                                 {{-- Análisis Externo --}}
@@ -60,7 +60,7 @@
                                     🌐 Análisis Externo
                                 </button>
                                 <div x-show="openExterno" class="pl-4">
-                                    <a href="/porter" class="block px-4 py-1 hover:bg-blue-100">🧠 5 Fuerzas de Porter</a>
+                                    <a href="{{ route('fuerza_porter.redirigir') }}" class="block px-4 py-1 hover:bg-blue-100">🧠 5 Fuerzas de Porter</a>
                                     <a href="/pest" class="block px-4 py-1 hover:bg-blue-100">🌍 PEST</a>
                                 </div>
                             </div>
@@ -86,5 +86,6 @@
 
             </main>
         </div>
+        @yield('scripts')
     </body>
 </html>

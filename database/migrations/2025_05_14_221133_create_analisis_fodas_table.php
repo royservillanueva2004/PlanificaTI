@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('analisis_fodas', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('plan_id')->unique(); // relación 1 a 1 con cada plan estratégico
+            $table->json('fortalezas')->nullable();
+            $table->json('debilidades')->nullable();
+            $table->json('oportunidades')->nullable();
+            $table->json('amenazas')->nullable();
             $table->timestamps();
+
+            $table->foreign('plan_id')->references('id')->on('plan_estrategicos')->onDelete('cascade');
         });
     }
 
