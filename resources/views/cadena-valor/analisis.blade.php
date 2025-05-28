@@ -3,11 +3,11 @@
 @section('content')
 <div class="max-w-7xl mx-auto p-6">
     
-    {{-- BOTÓN EXTERNO QUE ENVÍA EL FORMULARIO --}}
+    {{-- BOTÓN EXTERNO QUE ENVÍA EL FORMULARIO Y REDIRIGE --}}
     <div class="pt-4 flex justify-end">
         <button 
             type="button" 
-            onclick="document.getElementById('form-foda').submit()" 
+            onclick="enviarYRedirigir()"
             class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition-all duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -85,6 +85,29 @@ function agregarCampo(contenedorId, inputName) {
     input.placeholder = inputName.includes('fortalezas') ? 'Fortaleza nueva' : 'Debilidad nueva';
     input.className = 'w-full border px-4 py-2 rounded';
     container.appendChild(input);
+}
+function enviarYRedirigir() {
+    const form = document.getElementById('form-foda');
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.href = "{{ route('matriz-bcg.index') }}";
+        } else {
+            alert('Ocurrió un error al guardar los datos.');
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert('Error al enviar el formulario.');
+    });
 }
 </script>
 @endsection

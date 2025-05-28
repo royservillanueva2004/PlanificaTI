@@ -20,7 +20,7 @@ return new class extends Migration
             $table->json('amenazas')->nullable();
             $table->timestamps();
 
-            $table->foreign('plan_id')->references('id')->on('planes_estrategicos')->onDelete('cascade');
+            $table->foreign('plan_id')->references('id')->on('plan_estrategicos')->onDelete('cascade');
         });
     }
 

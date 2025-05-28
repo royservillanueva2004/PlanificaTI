@@ -7,6 +7,9 @@ use App\Http\Controllers\ObjetivoController;
 use App\Http\Controllers\MatrizCAMEController;
 use App\Http\Controllers\CadenaValorController;
 use App\Http\Controllers\AnalisisFodaController;
+use App\Http\Controllers\MatrizBCGController;
+use App\Http\Controllers\FuerzaPorterController;
+use App\Http\Controllers\PestController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -38,7 +41,36 @@ Route::middleware(['auth', 'plan.selected'])->group(function () {
 
     // Guardar FODA
     Route::post('/foda/guardar', [AnalisisFodaController::class, 'guardar'])->name('foda.guardar');
-    Route::get('/matriz-participacion', [App\Http\Controllers\MatrizParticipacionController::class, 'index'])->name('matriz.participacion');
+
+
+    // Matriz - bcg
+    Route::get('/matriz-bcg', [MatrizBCGController::class, 'index'])->name('matriz-bcg.index');
+    Route::post('/matriz-bcg', [MatrizBCGController::class, 'store'])->name('matriz-bcg.store');
+    Route::get('/matriz-bcg/resultado', [MatrizBCGController::class, 'resultado'])->name('matriz-bcg.resultado');
+    
+
+
+    // Redirección inteligente: index o resultado según exista el análisis
+    Route::get('/fuerza_porter/redirigir', function () {
+        $planId = session('plan_id');
+
+        if (!$planId) {
+            return redirect()->route('planes.index')->with('error', 'Seleccione un plan estratégico primero.');
+        }
+
+        $analisis = \App\Models\FuerzaPorter::where('plan_id', $planId)->first();
+
+        return $analisis
+            ? redirect()->route('fuerza_porter.resultado', $analisis->id)
+            : redirect()->route('fuerza_porter.index');
+    })->name('fuerza_porter.redirigir');
+
+    // Recurso completo
+    Route::resource('fuerza_porter', FuerzaPorterController::class);
+    Route::get('/fuerza_porter/{id}/resultado', [FuerzaPorterController::class, 'resultado'])->name('fuerza_porter.resultado');
+    Route::post('/fuerza_porter/{id}/guardar-foda', [FuerzaPorterController::class, 'guardarFoda'])->name('fuerza_porter.guardar_foda');
+
+    Route::resource('pest', PestController::class);
 
     // Registrar todo menos `show`
     Route::resource('cadena-valor', CadenaValorController::class)->except(['show']);
