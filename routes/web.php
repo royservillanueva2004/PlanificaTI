@@ -10,6 +10,7 @@ use App\Http\Controllers\AnalisisFodaController;
 use App\Http\Controllers\MatrizBCGController;
 use App\Http\Controllers\FuerzaPorterController;
 use App\Http\Controllers\PestController;
+use App\Http\Controllers\ResumenEjecutivoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -74,6 +75,10 @@ Route::middleware(['auth', 'plan.selected'])->group(function () {
 
     // Registrar todo menos `show`
     Route::resource('cadena-valor', CadenaValorController::class)->except(['show']);
+
+    Route::get('/resumen-ejecutivo', [ResumenEjecutivoController::class, 'index'])->name('resumen-ejecutivo.index');
+    Route::post('/resumen-ejecutivo', [ResumenEjecutivoController::class, 'store'])->name('resumen-ejecutivo.store');
+    Route::get('/resumen-ejecutivo/mostrar', [ResumenEjecutivoController::class, 'mostrar'])->name('resumen-ejecutivo.mostrar');
 });
 
 require __DIR__.'/auth.php';
