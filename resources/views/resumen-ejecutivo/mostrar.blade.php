@@ -291,8 +291,8 @@
             const data = await response.json();
 
             if (data.conclusion) {
+                pConclusion.innerHTML = data.conclusion.replace(/\n/g, "<br>");
                 pConclusion.classList.remove('text-muted');
-                pConclusion.textContent = data.conclusion;
             } else if (data.error) {
                 alert("Error: " + data.error);
             } else {
