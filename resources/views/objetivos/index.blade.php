@@ -18,7 +18,7 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="flex flex-col gap-4">
         @foreach($generales as $general)
             <div class="bg-white border border-gray-200 shadow-md rounded-lg p-5 hover:shadow-lg transition duration-200">
                 <div class="flex justify-between items-start mb-2">
@@ -28,7 +28,7 @@
                     <div class="flex gap-2">
                         <a href="{{ route('objetivos.edit', $general->id) }}"
                            class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">
-                             Editar
+                            Editar
                         </a>
                         <form action="{{ route('objetivos.destroy', $general->id) }}" method="POST"
                               onsubmit="return confirm('¿Estás seguro de eliminar este objetivo?')">

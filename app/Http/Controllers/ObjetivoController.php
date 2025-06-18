@@ -17,7 +17,7 @@ class ObjetivoController extends Controller
         }
 
         $generales = Objetivo::where('tipo', 'general')
-            ->where('plan_id', $planId) // ✅ Solo objetivos del plan seleccionado
+            ->where('plan_id', $planId)
             ->with('especificos')
             ->get();
 

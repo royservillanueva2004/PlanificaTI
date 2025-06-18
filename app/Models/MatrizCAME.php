@@ -13,5 +13,6 @@ class MatrizCAME extends Model
     protected $fillable = [
         'tipo',
         'accion',
+        'plan_id',
     ];
 }

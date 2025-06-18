@@ -22,4 +22,8 @@ class PlanEstrategico extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function resumenEjecutivo()
+    {
+        return $this->hasOne(ResumenEjecutivo::class, 'plan_id');
+    }
 }

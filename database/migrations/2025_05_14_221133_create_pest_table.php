@@ -14,24 +14,15 @@ return new class extends Migration
         Schema::create('pests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('plan_id')->constrained('plan_estrategicos')->onDelete('cascade');
-            
-            // Factores PESTEL
-            $table->text('politicos')->nullable()->comment('Factores políticos que afectan al negocio');
-            $table->text('economicos')->nullable()->comment('Factores económicos del entorno');
-            $table->text('sociales')->nullable()->comment('Factores sociales y demográficos');
-            $table->text('tecnologicos')->nullable()->comment('Factores tecnológicos relevantes');
-            $table->text('ambientales')->nullable()->comment('Factores medioambientales');
-            $table->text('legales')->nullable()->comment('Factores legales y regulatorios');
-            
-            // Resultados del análisis
-            $table->json('oportunidades')->nullable()->comment('Oportunidades identificadas');
-            $table->json('amenazas')->nullable()->comment('Amenazas identificadas');
-            $table->text('conclusion')->nullable()->comment('Conclusión del análisis');
-            
+            $table->json('respuestas')->nullable();
+            $table->unsignedInteger('social')->nullable();
+            $table->unsignedInteger('ambiental')->nullable();
+            $table->unsignedInteger('politico')->nullable();
+            $table->unsignedInteger('economico')->nullable();
+            $table->unsignedInteger('tecnologico')->nullable();
+            $table->text('conclusion')->nullable();
+            $table->text('reflexion')->nullable();    
             $table->timestamps();
-            
-            // Índices
-            $table->index('plan_id');
         });
     }
 
