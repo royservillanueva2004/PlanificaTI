@@ -70,7 +70,9 @@
                                 </div>
                             </div>
 
-                            <a href="/estrategia" class="block px-4 py-2 hover:bg-blue-100">🎯 Identificación Estratégica</a>
+                            <a href="{{ route('identificacion.index') }}" class="block px-4 py-2 hover:bg-blue-100">
+                                🎯 Identificación Estratégica
+                            </a>
                             <a href="/matrizcame" class="block px-4 py-2 hover:bg-blue-100">🧩 Matriz CAME</a>
                             <a href="/resumen-ejecutivo" class="block px-4 py-2 hover:bg-blue-100">📋 Resumen del Plan Ejecutivo</a>
                         @else
@@ -92,5 +94,6 @@
             </main>
         </div>
         @yield('scripts')
+        @stack('scripts')
     </body>
 </html>

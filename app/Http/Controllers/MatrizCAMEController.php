@@ -7,60 +7,68 @@ use Illuminate\Http\Request;
 
 class MatrizCAMEController extends Controller
 {
-    // Mostrar todos los registros
-    public function index()
+    // Mostrar la matriz CAME y formulario unificado
+    public function index(Request $request)
     {
-        $acciones = MatrizCAME::all();
-        return view('matrizcame.index', compact('acciones'));
+        $plan_id = session('plan_id');
+        $acciones = MatrizCAME::where('plan_id', $plan_id)->get();
+
+        // Si se solicita edición
+        $editar = null;
+        if ($request->has('editar')) {
+            $editar = MatrizCAME::where('id', $request->editar)
+                                ->where('plan_id', $plan_id)
+                                ->firstOrFail();
+        }
+
+        return view('matrizcame.index', compact('acciones', 'editar'));
     }
 
-    // Mostrar el formulario para crear un nuevo registro
-    public function create()
-    {
-        return view('matrizcame.create');
-    }
-
-    // Guardar nuevo registro en la base de datos
+    // Guardar nueva acción
     public function store(Request $request)
     {
         $request->validate([
             'accion' => 'required|string|max:255',
-            'tipo' => 'required|in:C,A,M,E'
+            'tipo' => 'required|in:C,A,M,E',
         ]);
 
-        MatrizCAME::create($request->all());
+        MatrizCAME::create([
+            'accion' => $request->accion,
+            'tipo' => $request->tipo,
+            'plan_id' => session('plan_id'),
+        ]);
 
         return redirect()->route('matrizcame.index')->with('success', 'Acción registrada correctamente.');
     }
 
-    // Mostrar el formulario para editar un registro existente
-    public function edit($id)
-    {
-        // Busca el registro por ID
-        $matrizcame = MatrizCAME::findOrFail($id);
-
-        // Pasa la variable a la vista
-        return view('matrizcame.edit', compact('matrizcame'));
-    }
-
-    // Actualizar el registro en la base de datos
+    // Actualizar una acción existente
     public function update(Request $request, $id)
     {
         $request->validate([
             'accion' => 'required|string|max:255',
-            'tipo' => 'required|in:C,A,M,E'
+            'tipo' => 'required|in:C,A,M,E',
         ]);
 
-        $accion = MatrizCAME::findOrFail($id);
-        $accion->update($request->all());
+        $accion = MatrizCAME::where('id', $id)
+                            ->where('plan_id', session('plan_id'))
+                            ->firstOrFail();
+
+        $accion->update([
+            'accion' => $request->accion,
+            'tipo' => $request->tipo,
+            'plan_id' => session('plan_id'),
+        ]);
 
         return redirect()->route('matrizcame.index')->with('success', 'Acción actualizada correctamente.');
     }
 
-    // Eliminar un registro
+    // Eliminar acción
     public function destroy($id)
     {
-        $accion = MatrizCAME::findOrFail($id);
+        $accion = MatrizCAME::where('id', $id)
+                            ->where('plan_id', session('plan_id'))
+                            ->firstOrFail();
+
         $accion->delete();
 
         return redirect()->route('matrizcame.index')->with('success', 'Acción eliminada correctamente.');

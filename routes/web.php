@@ -11,6 +11,7 @@ use App\Http\Controllers\MatrizBCGController;
 use App\Http\Controllers\FuerzaPorterController;
 use App\Http\Controllers\PestController;
 use App\Http\Controllers\ResumenEjecutivoController;
+use App\Http\Controllers\IdentificacionEstrategicaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -71,14 +72,38 @@ Route::middleware(['auth', 'plan.selected'])->group(function () {
     Route::get('/fuerza_porter/{id}/resultado', [FuerzaPorterController::class, 'resultado'])->name('fuerza_porter.resultado');
     Route::post('/fuerza_porter/{id}/guardar-foda', [FuerzaPorterController::class, 'guardarFoda'])->name('fuerza_porter.guardar_foda');
 
-    Route::resource('pest', PestController::class);
+    // Análisis PEST
+    Route::get('/pest', [PestController::class, 'index'])->name('pest.index');
+    Route::post('/pest/reflexion', [PestController::class, 'generarReflexion'])->name('pest.reflexion');
+    Route::post('/pest/analizar', [PestController::class, 'mostrarResultado'])->name('pest.analizar');
+    Route::get('/pest/ver', [PestController::class, 'verResultado'])->name('pest.ver');
+    Route::post('/pest/foda', [PestController::class, 'guardarFoda'])->name('pest.foda.guardar');
+    Route::post('/pest/guardar-foda', [PestController::class, 'guardarFoda'])->name('pest.foda.guardar');
+    Route::get('/pest/reflexion-bd', [PestController::class, 'generarReflexionDesdeBD'])->name('pest.reflexion.bd');
 
     // Registrar todo menos `show`
     Route::resource('cadena-valor', CadenaValorController::class)->except(['show']);
 
+    //identificación estratégica
+    Route::get('/estrategia', [IdentificacionEstrategicaController::class, 'index'])->name('identificacion.index');
+    Route::get('/identificacion/fo', [IdentificacionEstrategicaController::class, 'fortalezasOportunidades'])->name('identificacion.fortalezas_oportunidades');
+    Route::post('/identificacion/fo', [IdentificacionEstrategicaController::class, 'guardarFO'])->name('identificacion.guardar.fo');
+    Route::get('/identificacion/fa', [IdentificacionEstrategicaController::class, 'fortalezasAmenazas'])->name('identificacion.fortalezas_amenazas');
+    Route::post('/identificacion/fa', [IdentificacionEstrategicaController::class, 'guardarFA'])->name('identificacion.guardar.fa');
+    Route::get('/identificacion/do', [IdentificacionEstrategicaController::class, 'debilidadesOportunidades'])->name('identificacion.debilidades_oportunidades');
+    Route::post('/identificacion/do', [IdentificacionEstrategicaController::class, 'guardarDO'])->name('identificacion.guardar.do');
+    Route::get('/identificacion/da', [IdentificacionEstrategicaController::class, 'debilidadesAmenazas'])->name('identificacion.debilidades_amenazas');
+    Route::post('/identificacion/da', [IdentificacionEstrategicaController::class, 'guardarDA'])->name('identificacion.guardar.da');
+
+    Route::get('/identificacion/resultados', [IdentificacionEstrategicaController::class, 'verResultados'])->name('identificacion.resultados');
+
     Route::get('/resumen-ejecutivo', [ResumenEjecutivoController::class, 'index'])->name('resumen-ejecutivo.index');
     Route::post('/resumen-ejecutivo', [ResumenEjecutivoController::class, 'store'])->name('resumen-ejecutivo.store');
     Route::get('/resumen-ejecutivo/mostrar', [ResumenEjecutivoController::class, 'mostrar'])->name('resumen-ejecutivo.mostrar');
+    Route::get('/resumen-ejecutivo/estrategia', [ResumenEjecutivoController::class, 'generarEstrategia'])->name('resumen-ejecutivo.estrategia');
+    Route::get('/resumen-ejecutivo/conclusiones', [ResumenEjecutivoController::class, 'generarConclusiones'])->name('resumen-ejecutivo.conclusiones');
+
+    Route::get('/resumen-ejecutivo/pdf', [ResumenEjecutivoController::class, 'generarPDF'])->name('resumen-ejecutivo.pdf');
 });
 
 require __DIR__.'/auth.php';
