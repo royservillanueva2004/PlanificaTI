@@ -57,4 +57,22 @@
         @endforeach
     </div>
 </div>
+
 @endsection
+{{-- Alerta tipo toast (éxito) --}}
+@if(session('success'))
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: '✅ {{ session('success') }}',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+    </script>
+    @endpush
+@endif

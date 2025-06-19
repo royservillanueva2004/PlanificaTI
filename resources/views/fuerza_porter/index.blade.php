@@ -1,16 +1,27 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto p-6">
+<div class="container mx-auto p-6 min-h-screen">
     <h2 class="text-2xl font-semibold mb-5">Análisis 5 Fuerzas de Porter</h2>
 
     @if(session('success'))
-        <div class="alert alert-success mt-3 bg-green-500 text-white p-3 rounded">
-            {{ session('success') }}
-        </div>
+        @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: '✅ {{ session('success') }}',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        </script>
+        @endpush
     @endif
 
-    <form method="POST" action="{{ route('fuerza_porter.store') }}" id="porterForm">
+    <form method="POST" action="{{ route('fuerza_porter.store') }}" id="porterForm" class="mb-20">
         @csrf
         <input type="hidden" name="plan_id" value="{{ session('plan_id') }}">
 
@@ -43,13 +54,15 @@
             ];
         @endphp
 
-        <div class="overflow-x-auto shadow-xl sm:rounded-lg mb-5">
+        <div class="overflow-x-auto shadow-xl sm:rounded-lg mb-8">
             <table class="min-w-full table-auto border-collapse border border-gray-200">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="border border-gray-300 px-4 py-2 text-left">Perfil Competitivo</th>
                         @for ($i = 1; $i <= 5; $i++)
-                            <th class="border border-gray-300 px-2 py-2 text-center">{{ $i }}<br><small>{{ ['Nada', 'Poco', 'Medio', 'Alto', 'Muy Alto'][$i-1] }}</small></th>
+                            <th class="border border-gray-300 px-2 py-2 text-center">{{ $i }}<br>
+                                <small>{{ ['Nada', 'Poco', 'Medio', 'Alto', 'Muy Alto'][$i-1] }}</small>
+                            </th>
                         @endfor
                         <th class="border border-gray-300 px-4 py-2 text-center">Puntaje</th>
                     </tr>
@@ -62,37 +75,51 @@
                             </td>
                         </tr>
                         @foreach ($items as $label => $name)
-                        <tr>
-                            <td class="border border-gray-300 px-4 py-2">{{ $label }}</td>
-                            @for ($i = 1; $i <= 5; $i++)
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-2">{{ $label }}</td>
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <td class="border border-gray-300 text-center">
+                                        <input type="radio" name="{{ $name }}" value="{{ $i }}"
+                                            class="mx-auto {{ $categoria }}"
+                                            onclick="calcularPuntaje()" @if(isset($registro) && $registro->$name == $i) checked @endif required>
+                                    </td>
+                                @endfor
                                 <td class="border border-gray-300 text-center">
-                                    <input type="radio" name="{{ $name }}" value="{{ $i }}" class="mx-auto {{ $categoria }}" onclick="calcularPuntaje()" @if(isset($registro) && $registro->$name == $i) checked @endif required>
+                                    <span id="puntaje_{{ $name }}">@if(isset($registro)) {{ $registro->$name }} @else 0 @endif</span>
                                 </td>
-                            @endfor
-                            <td class="border border-gray-300 text-center"><span id="puntaje_{{ $name }}">@if(isset($registro)) {{ $registro->$name }} @else 0 @endif</span></td>
-                        </tr>
+                            </tr>
                         @endforeach
                         <tr>
                             <td class="border border-gray-300 font-semibold px-4 py-2">Subtotal {{ ucfirst($categoria) }}</td>
                             <td colspan="5" class="border border-gray-300"></td>
-                            <td class="border border-gray-300 text-center font-semibold"><span id="subtotal_{{ $categoria }}">0</span></td>
+                            <td class="border border-gray-300 text-center font-semibold">
+                                <span id="subtotal_{{ $categoria }}">0</span>
+                            </td>
                         </tr>
                     @endforeach
                     <tr class="bg-gray-100">
                         <td class="border border-gray-300 px-4 py-2 font-semibold text-lg">TOTAL GENERAL</td>
                         <td colspan="5" class="border border-gray-300"></td>
-                        <td class="border border-gray-300 text-center font-semibold text-lg"><span id="total_general">0</span></td>
+                        <td class="border border-gray-300 text-center font-semibold text-lg">
+                            <span id="total_general">0</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg">
-            Guardar análisis
-        </button>
+        {{-- Botón mejorado --}}
+        <div class="flex justify-end">
+            <button type="submit"
+                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition-all duration-300">
+                <i class="bi bi-check-circle-fill"></i>
+                Guardar análisis
+            </button>
+        </div>
     </form>
 </div>
 
+{{-- JS para cálculo en tiempo real --}}
 <script>
 function calcularPuntaje() {
     document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
@@ -114,21 +141,6 @@ function calcularPuntaje() {
     });
 
     document.getElementById('total_general').textContent = total;
-    generarConclusion(total);
-}
-
-function generarConclusion(puntajeTotal) {
-    let conclusion = '';
-    if (puntajeTotal < 30) {
-        conclusion = 'Estamos en un mercado altamente competitivo, en el que es muy difícil hacerse un hueco en el mercado.';
-    } else if (puntajeTotal < 45) {
-        conclusion = 'Competitividad relativamente alta, pero se puede encontrar un nicho de mercado con ajustes.';
-    } else if (puntajeTotal < 60) {
-        conclusion = 'La situación actual del mercado es favorable a la empresa.';
-    } else {
-        conclusion = 'Estamos en una situación excelente para la empresa.';
-    }
-    document.getElementById('conclusion').value = conclusion;
 }
 window.addEventListener('DOMContentLoaded', calcularPuntaje);
 </script>

@@ -12,6 +12,7 @@ use App\Http\Controllers\FuerzaPorterController;
 use App\Http\Controllers\PestController;
 use App\Http\Controllers\ResumenEjecutivoController;
 use App\Http\Controllers\IdentificacionEstrategicaController;
+use App\Http\Controllers\UenController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,7 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/planes/seleccionar', [PlanEstrategicoController::class, 'seleccionar'])->name('planes.seleccionar');
 });
 
-Route::middleware(['auth', 'plan.selected'])->group(function () {
+    Route::resource('uen', UenController::class)->only(['index', 'store', 'destroy']);
+    Route::resource('uen', UenController::class)->except(['show']);
+
+    Route::middleware(['auth', 'plan.selected'])->group(function () {
     Route::resource('objetivos', ObjetivoController::class);
     Route::resource('matrizcame', MatrizCAMEController::class);
 

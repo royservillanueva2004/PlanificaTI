@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-5xl mx-auto p-6">
+<div class="max-w-5xl mx-auto p-6 pb-24">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">📊 Resultado del Análisis PEST</h1>
 
     {{-- Gráfico --}}

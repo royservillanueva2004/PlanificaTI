@@ -11,21 +11,25 @@ class AnalisisFodaController extends Controller
     {
         $planId = session('plan_id');
 
-        $registro = AnalisisFoda::firstOrNew(['plan_id' => $planId]);
+        $request->validate([
+            'fortalezas' => 'nullable|array',
+            'fortalezas.*' => 'nullable|string|max:255',
+            'debilidades' => 'nullable|array',
+            'debilidades.*' => 'nullable|string|max:255',
+        ]);
 
-        // Mezclar las nuevas con las anteriores
-        $registro->fortalezas = array_values(array_unique(array_filter(array_merge(
-            $registro->fortalezas ?? [],
-            $request->input('fortalezas', [])
-        ))));
+        // Limpia valores vacíos
+        $fortalezas = array_filter($request->fortalezas ?? [], fn($v) => trim($v) !== '');
+        $debilidades = array_filter($request->debilidades ?? [], fn($v) => trim($v) !== '');
 
-        $registro->debilidades = array_values(array_unique(array_filter(array_merge(
-            $registro->debilidades ?? [],
-            $request->input('debilidades', [])
-        ))));
+        \App\Models\AnalisisFoda::updateOrCreate(
+            ['plan_id' => $planId],
+            [
+                'fortalezas' => array_values($fortalezas),
+                'debilidades' => array_values($debilidades),
+            ]
+        );
 
-        $registro->save();
-
-        return redirect()->route('planes.index')->with('success', 'Análisis FODA actualizado correctamente.');
+        return response()->json(['success' => true]);
     }
 }

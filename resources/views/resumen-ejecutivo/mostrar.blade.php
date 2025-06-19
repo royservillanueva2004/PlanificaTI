@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
+<div class="container py-5 pb-40">
     <div class="card shadow-sm rounded-4 border-0 mb-4">
         <div class="card-body">
             <h2 class="text-center text-primary mb-4">
@@ -56,7 +56,16 @@
             </div>
 
     </div>
-
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-header bg-dark text-white fw-bold">UNIDADES ESTRATÉGICAS DE NEGOCIO</div>
+        <div class="card-body">
+            @forelse($uens as $uen)
+                <p class="mb-1">🔹 {{ $uen->descripcion }}</p>
+            @empty
+                <p class="text-muted">No se han definido unidades estratégicas aún.</p>
+            @endforelse
+        </div>
+    </div>
     <div class="card shadow-sm border-0 mt-4">
         <div class="card-header bg-success text-white fw-bold">OBJETIVOS ESTRATÉGICOS</div>
         <div class="card-body p-0">
@@ -162,8 +171,7 @@
     <div class="card shadow-sm border-0 mt-4">
         <div class="card-header bg-info text-white fw-bold">IDENTIFICACIÓN DE ESTRATEGIA</div>
         <div class="card-body">
-            <p>Escriba en el siguiente recuadro la estrategia identificada en la Matriz FODA.</p>
-
+        
             <div class="mb-3">
                 <textarea id="estrategia-generada" class="form-control border border-primary" rows="6" readonly style="resize: none;">
                 {{ $resumen->identificacion_estrategica ?? 'Estrategia aún no generada.' }}
@@ -172,7 +180,7 @@
 
             <div class="text-center">
                 <button id="btn-generar-estrategia" class="btn btn-outline-info">
-                    <i class="bi bi-stars"></i> Generar Estrategia con IA
+                    <i class="bi bi-stars"></i> Generar Estrategia
                 </button>
 
                 @push('scripts')
@@ -208,7 +216,7 @@
                         alert("Error al generar la estrategia: " + error.message);
                     } finally {
                         btn.disabled = false;
-                        btn.innerHTML = `<i class="bi bi-stars"></i> Generar Estrategia con IA`;
+                        btn.innerHTML = `<i class="bi bi-stars"></i> Generar Estrategia`;
                     }
                 });
                 </script>
@@ -263,15 +271,17 @@
         </div>
         <div class="text-center mt-3">
             <button id="btn-generar-conclusion" class="btn btn-outline-info">
-                <i class="bi bi-robot"></i> Generar Conclusión con IA
+                <i class="bi bi-robot"></i> Generar Conclusión
             </button>
         </div>
     </div>
     
    
-    <a href="{{ route('resumen-ejecutivo.pdf') }}" class="btn btn-outline-danger float-end mb-4">
-        <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
-    </a>
+    <div class="text-center mt-5 mb-5">
+        <a href="{{ route('resumen-ejecutivo.pdf') }}" class="btn btn-outline-danger btn-lg">
+            <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
+        </a>
+    </div>
 </div>
 @endsection
 @push('scripts')

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-4xl mx-auto p-6">
-    <h2 class="text-2xl font-bold mb-4">📌 Resultado del Análisis - 5 Fuerzas de Porter</h2>
+<div class="max-w-3xl mx-auto p-6 pb-24">
+    <h2 class="text-2xl font-bold mb-6">📌 Resultado del Análisis - 5 Fuerzas de Porter</h2>
 
     <div class="bg-blue-100 border border-blue-300 text-blue-900 p-4 rounded mb-6">
-        <strong>Conclusión automática:</strong>
+        <strong>Conclusión:</strong>
         <p class="mt-2">{{ $registro->conclusion }}</p>
     </div>
 
@@ -23,43 +23,31 @@
     <form method="POST" action="{{ route('fuerza_porter.guardar_foda', $registro->id) }}">
         @csrf
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="flex flex-col gap-10 mb-6">
+            {{-- Oportunidades --}}
             <div>
-                <label class="block font-semibold mb-2">Oportunidades</label>
-                <div id="oportunidades-container">
-                    @if(isset($foda) && $foda->oportunidades)
-                        @foreach($foda->oportunidades as $index => $item)
-                            <div class="flex gap-3 mb-2">
-                                <input type="text" name="oportunidades[]" value="{{ $item }}" class="w-full p-2 border border-gray-300 rounded" placeholder="Oportunidad {{ $index + 1 }}">
-                                <button type="button" onclick="removeItem(this)" class="bg-red-500 text-white px-2 rounded">Eliminar</button>
-                            </div>
-                        @endforeach
-                    @else
-                        <div class="flex gap-3 mb-2">
-                            <input type="text" name="oportunidades[]" class="w-full p-2 border border-gray-300 rounded" placeholder="Oportunidad 1">
-                            <button type="button" onclick="removeItem(this)" class="bg-red-500 text-white px-2 rounded">Eliminar</button>
+                <label class="block font-semibold mb-2">💡 Oportunidades</label>
+                <div id="oportunidades-container" class="space-y-3">
+                    @foreach($foda->oportunidades ?? [''] as $item)
+                        <div class="flex gap-3">
+                            <textarea name="oportunidades[]" rows="2" class="w-full p-2 border border-gray-300 rounded resize-y text-sm" placeholder="Oportunidad...">{{ $item }}</textarea>
+                            <button type="button" onclick="removeItem(this)" class="bg-red-500 text-white px-3 py-1 rounded text-sm">Eliminar</button>
                         </div>
-                    @endif
+                    @endforeach
                 </div>
                 <button type="button" onclick="addItem('oportunidades')" class="bg-green-600 text-white px-4 py-2 mt-2 rounded">+ Añadir</button>
             </div>
 
+            {{-- Amenazas --}}
             <div>
-                <label class="block font-semibold mb-2">Amenazas</label>
-                <div id="amenazas-container">
-                    @if(isset($foda) && $foda->amenazas)
-                        @foreach($foda->amenazas as $index => $item)
-                            <div class="flex gap-3 mb-2">
-                                <input type="text" name="amenazas[]" value="{{ $item }}" class="w-full p-2 border border-gray-300 rounded" placeholder="Amenaza {{ $index + 1 }}">
-                                <button type="button" onclick="removeItem(this)" class="bg-red-500 text-white px-2 rounded">Eliminar</button>
-                            </div>
-                        @endforeach
-                    @else
-                        <div class="flex gap-3 mb-2">
-                            <input type="text" name="amenazas[]" class="w-full p-2 border border-gray-300 rounded" placeholder="Amenaza 1">
-                            <button type="button" onclick="removeItem(this)" class="bg-red-500 text-white px-2 rounded">Eliminar</button>
+                <label class="block font-semibold mb-2">⚠️ Amenazas</label>
+                <div id="amenazas-container" class="space-y-3">
+                    @foreach($foda->amenazas ?? [''] as $item)
+                        <div class="flex gap-3">
+                            <textarea name="amenazas[]" rows="2" class="w-full p-2 border border-gray-300 rounded resize-y text-sm" placeholder="Amenaza...">{{ $item }}</textarea>
+                            <button type="button" onclick="removeItem(this)" class="bg-red-500 text-white px-3 py-1 rounded text-sm">Eliminar</button>
                         </div>
-                    @endif
+                    @endforeach
                 </div>
                 <button type="button" onclick="addItem('amenazas')" class="bg-green-600 text-white px-4 py-2 mt-2 rounded">+ Añadir</button>
             </div>
@@ -69,7 +57,6 @@
             <a href="{{ route('fuerza_porter.index') }}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg">
                 ✏️ Editar análisis
             </a>
-
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg">
                 Guardar y Continuar
             </button>
@@ -80,19 +67,24 @@
 <script>
 function addItem(type) {
     const container = document.getElementById(`${type}-container`);
-    const index = container.children.length + 1;
+    const textarea = document.createElement('textarea');
+    textarea.name = `${type}[]`;
+    textarea.rows = 2;
+    textarea.placeholder = type === 'oportunidades' ? 'Oportunidad...' : 'Amenaza...';
+    textarea.className = 'w-full p-2 border border-gray-300 rounded resize-y text-sm';
 
-    const placeholderText = type === 'oportunidades'
-        ? `Oportunidad ${index}`
-        : `Amenaza ${index}`;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'bg-red-500 text-white px-3 py-1 rounded text-sm';
+    btn.textContent = 'Eliminar';
+    btn.onclick = () => div.remove();
 
-    const newItem = document.createElement('div');
-    newItem.classList.add('flex', 'gap-3', 'mb-2');
-    newItem.innerHTML = `
-        <input type="text" name="${type}[]" class="w-full p-2 border border-gray-300 rounded" placeholder="${placeholderText}">
-        <button type="button" onclick="removeItem(this)" class="bg-red-500 text-white px-2 rounded">Eliminar</button>
-    `;
-    container.appendChild(newItem);
+    const div = document.createElement('div');
+    div.className = 'flex gap-3';
+    div.appendChild(textarea);
+    div.appendChild(btn);
+
+    container.appendChild(div);
 }
 
 function removeItem(button) {

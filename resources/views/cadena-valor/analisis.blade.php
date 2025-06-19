@@ -41,35 +41,54 @@
 
         {{-- Columna derecha: Formulario FODA --}}
         <div class="lg:basis-1/2 flex flex-col gap-6">
-            <form id="form-foda" action="{{ route('foda.guardar') }}" method="POST" class="bg-white p-6 rounded-lg shadow border space-y-6">
+            <form id="form-foda" action="{{ route('foda.guardar') }}" method="POST"
+                class="bg-white p-6 rounded-xl shadow-md border border-gray-200 space-y-6 mb-12"> {{-- Mejores bordes y margen abajo --}}
                 @csrf
 
                 {{-- Fortalezas --}}
                 <div>
                     <h3 class="text-green-700 font-semibold mb-2">💪 Fortalezas</h3>
                     <div id="fortalezas-container" class="space-y-2">
-                        @if(isset($foda) && is_array($foda->fortalezas))
-                            @foreach($foda->fortalezas as $fortaleza)
-                                <input type="text" name="fortalezas[]" value="{{ $fortaleza }}" class="w-full border px-4 py-2 rounded">
-                            @endforeach
-                        @endif
-                        <input type="text" name="fortalezas[]" placeholder="Fortaleza nueva" class="w-full border px-4 py-2 rounded">
+                        @foreach($foda->fortalezas ?? [] as $fortaleza)
+                            <div class="flex gap-2">
+                                <input type="text" name="fortalezas[]" value="{{ $fortaleza }}"
+                                    class="w-full border border-gray-300 px-4 py-2 rounded shadow-sm" />
+                                <button type="button" onclick="this.parentNode.remove()" 
+                                        class="text-red-600 font-bold text-lg">✖</button>
+                            </div>
+                        @endforeach
+                        <div class="flex gap-2">
+                            <input type="text" name="fortalezas[]" placeholder="Fortaleza nueva"
+                                class="w-full border border-gray-300 px-4 py-2 rounded shadow-sm" />
+                            <button type="button" onclick="this.parentNode.remove()" 
+                                    class="text-red-600 font-bold text-lg">✖</button>
+                        </div>
                     </div>
-                    <button type="button" onclick="agregarCampo('fortalezas-container', 'fortalezas[]')" class="text-sm text-blue-600 mt-2 hover:underline">+ Agregar fortaleza</button>
+                    <button type="button" onclick="agregarCampo('fortalezas-container', 'fortalezas[]')"
+                            class="text-sm text-blue-600 mt-2 hover:underline">+ Agregar fortaleza</button>
                 </div>
 
                 {{-- Debilidades --}}
                 <div>
                     <h3 class="text-red-700 font-semibold mb-2">⚠️ Debilidades</h3>
                     <div id="debilidades-container" class="space-y-2">
-                        @if(isset($foda) && is_array($foda->debilidades))
-                            @foreach($foda->debilidades as $debilidad)
-                                <input type="text" name="debilidades[]" value="{{ $debilidad }}" class="w-full border px-4 py-2 rounded">
-                            @endforeach
-                        @endif
-                        <input type="text" name="debilidades[]" placeholder="Debilidad nueva" class="w-full border px-4 py-2 rounded">
+                        @foreach($foda->debilidades ?? [] as $debilidad)
+                            <div class="flex gap-2">
+                                <input type="text" name="debilidades[]" value="{{ $debilidad }}"
+                                    class="w-full border border-gray-300 px-4 py-2 rounded shadow-sm" />
+                                <button type="button" onclick="this.parentNode.remove()"
+                                        class="text-red-600 font-bold text-lg">✖</button>
+                            </div>
+                        @endforeach
+                        <div class="flex gap-2">
+                            <input type="text" name="debilidades[]" placeholder="Debilidad nueva"
+                                class="w-full border border-gray-300 px-4 py-2 rounded shadow-sm" />
+                            <button type="button" onclick="this.parentNode.remove()"
+                                    class="text-red-600 font-bold text-lg">✖</button>
+                        </div>
                     </div>
-                    <button type="button" onclick="agregarCampo('debilidades-container', 'debilidades[]')" class="text-sm text-blue-600 mt-2 hover:underline">+ Agregar debilidad</button>
+                    <button type="button" onclick="agregarCampo('debilidades-container', 'debilidades[]')"
+                            class="text-sm text-blue-600 mt-2 hover:underline">+ Agregar debilidad</button>
                 </div>
             </form>
         </div>
@@ -77,14 +96,26 @@
 </div>
 
 <script>
-function agregarCampo(contenedorId, inputName) {
-    const container = document.getElementById(contenedorId);
+function agregarCampo(containerId, inputName) {
+    const contenedor = document.getElementById(containerId);
+    const div = document.createElement('div');
+    div.className = 'flex gap-2 mt-2';
+
     const input = document.createElement('input');
     input.type = 'text';
     input.name = inputName;
     input.placeholder = inputName.includes('fortalezas') ? 'Fortaleza nueva' : 'Debilidad nueva';
     input.className = 'w-full border px-4 py-2 rounded';
-    container.appendChild(input);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.innerText = '✖';
+    btn.className = 'text-red-600 font-bold text-lg';
+    btn.onclick = () => div.remove();
+
+    div.appendChild(input);
+    div.appendChild(btn);
+    contenedor.appendChild(div);
 }
 function enviarYRedirigir() {
     const form = document.getElementById('form-foda');
