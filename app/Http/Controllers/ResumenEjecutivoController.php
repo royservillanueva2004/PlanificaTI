@@ -62,8 +62,9 @@ class ResumenEjecutivoController extends Controller
             ->get();
 
         $matrizCame = \App\Models\MatrizCAME::where('plan_id', $plan->id)->get();
+        $uens = \App\Models\Uen::where('plan_id', $plan_id)->get();
 
-        return view('resumen-ejecutivo.mostrar', compact('plan', 'resumen', 'foda', 'objetivosGenerales', 'matrizCame'));
+        return view('resumen-ejecutivo.mostrar', compact('plan', 'resumen', 'foda', 'objetivosGenerales', 'matrizCame', 'uens'));
     }
 
     public function generarEstrategia()
@@ -195,6 +196,7 @@ EOT;
         $registroFoda = AnalisisFoda::where('plan_id', $plan_id)->first();
         $objetivos = Objetivo::with('especificos')->where('plan_id', $plan_id)->where('tipo', 'general')->get();
         $matrizCame = \App\Models\MatrizCAME::where('plan_id', $plan_id)->get();
+        $uens = \App\Models\Uen::where('plan_id', $plan_id)->get();
 
         $foda = [
             'fortaleza'   => $registroFoda->fortalezas ?? [],
@@ -203,7 +205,7 @@ EOT;
             'amenaza'     => $registroFoda->amenazas ?? [],
         ];
 
-        $pdf = Pdf::loadView('resumen-ejecutivo.pdf', compact('plan', 'resumen', 'foda', 'objetivos', 'matrizCame'));
+        $pdf = Pdf::loadView('resumen-ejecutivo.pdf', compact('plan', 'resumen', 'foda', 'objetivos', 'matrizCame','uens'));
         return $pdf->download('resumen-ejecutivo.pdf');
     }
 
